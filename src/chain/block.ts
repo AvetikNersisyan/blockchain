@@ -1,39 +1,34 @@
-import { log } from 'console';
 import SHA256 from 'crypto-js/sha256'
+import { TTransaction } from './transaction'
 
-// type TBlock = {
-//     timestamp: number;
-//     data: string;
-//     nonce: number;
-//     hash: string;
-//     difficulty: number;
-// }
 
 export class Block {
-    timestamp: number;
-    data: string;
-    nonce: number;
-    hash: string;
-    difficulty: number;
+    private  nonce: number;
 
-    constructor(timestamp: number, data: string, nonce: number) {
+    timestamp: number;
+    transactions: TTransaction[];
+    hash: string;
+    previousHash: string | null | undefined;
+
+    constructor(timestamp: number, transactions: TTransaction[], previousHash?: string | null) {
         this.timestamp = timestamp;
-        this.data = data;
-        this.nonce = nonce;
+        this.transactions = transactions;
+        this.nonce = 0;
         this.hash = this.generateHash()
-        this.difficulty = 4;
+        this.previousHash = previousHash
     }
 
     generateHash(): string {
-        return SHA256(this.data + this.nonce + this.timestamp).toString();
+        return SHA256(JSON.stringify(this.transactions) + this.nonce + this.timestamp).toString();
     }
 
-    mineBlock(): void {
-        while (this.hash.substring(0, this.difficulty) !== new Array(this.difficulty).fill('0').join('')) {
+    mineBlock(difficulty: number): void {
+        while (this.hash.substring(0, difficulty) !== new Array(difficulty).fill('0').join('')) {
             this.nonce++;
             this.hash = this.generateHash()
         }
     }
+
 }
 
 export type TBlock = InstanceType<typeof Block>;
