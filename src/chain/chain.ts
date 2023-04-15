@@ -57,6 +57,12 @@ export class Chain {
   }
 
   addTransaction (transaction: TTransaction) {
+    if (!(transaction.from || transaction.to)) {
+      return  new Error('No from or to wallets.')
+    }
+    if (!transaction.isValidSignature()) {
+      return new Error('Signature is not valid')
+    }
     this.pendingTransactions.push(transaction);
   }
 
@@ -65,9 +71,14 @@ export class Chain {
     for (let i = 1; i < this.chain.length; i++) {
       const currentBlock = this.chain[i]
       const prevBlock = this.chain[i - 1]
+
+      if(!currentBlock.allTransactionsAreValid()) {
+        return false;
+      }
       if (currentBlock.generateHash() !== currentBlock.hash) {
         return false
       }
+
       if (currentBlock.previousHash !== prevBlock.hash) {
         return false
       }

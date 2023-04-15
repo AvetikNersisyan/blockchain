@@ -29,6 +29,15 @@ export class Block {
         }
     }
 
+    allTransactionsAreValid() {
+        for (const transaction of this.transactions) {
+            if (!transaction.isValidSignature()) {
+                return false;
+            }
+        }
+        return  true;
+    }
+
 }
 
 export type TBlock = InstanceType<typeof Block>;
