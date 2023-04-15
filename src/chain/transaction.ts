@@ -21,7 +21,6 @@ export class Transaction {
   }
 
   signTransaction (key: EC.KeyPair ) {
-
     if( key.getPublic('hex') !== this.from) {
         return new Error('You are not allowed to sign other\'s transaction');
     }
